@@ -1,5 +1,5 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 "use client";
+import { ReactNode } from "react";
 import "@rainbow-me/rainbowkit/styles.css";
 import {
   Chain,
@@ -8,7 +8,9 @@ import {
 } from "@rainbow-me/rainbowkit";
 import { WagmiProvider } from "wagmi";
 import { QueryClientProvider, QueryClient } from "@tanstack/react-query";
-import { ReactNode } from "react";
+import { sepolia } from "wagmi/chains";
+
+const queryClient = new QueryClient();
 
 const mande = {
   id: 18071918,
@@ -20,21 +22,23 @@ const mande = {
 } as const satisfies Chain;
 
 const config = getDefaultConfig({
-  appName: "My RainbowKit App",
-  projectId: "YOUR_PROJECT_ID",
+  appName: "moonx",
+  projectId: "b52456c0ffdabb5678905aae9f2aa217",
   chains: [mande],
+  ...(process.env.NEXT_PUBLIC_ENABLE_TESTNETS === "true" ? [sepolia] : []),
+
   ssr: true,
 });
 
-const queryClient = new QueryClient();
-
-function App({ children }: { children: ReactNode }) {
+function Provider({ children }: { children: ReactNode }) {
   return (
     <WagmiProvider config={config}>
       <QueryClientProvider client={queryClient}>
-        <RainbowKitProvider>{children}</RainbowKitProvider>
+        <RainbowKitProvider modalSize="compact" initialChain={mande}>
+          {children}
+        </RainbowKitProvider>
       </QueryClientProvider>
     </WagmiProvider>
   );
 }
-export default App;
+export default Provider;
